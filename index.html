@@ -643,7 +643,36 @@ body{font-family:'Inter',sans-serif;color:#fff;}
   <circle cx="44" cy="40" r="4" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
   <circle cx="56" cy="40" r="4" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
   <text x="50" y="88" font-family="Georgia,serif" font-size="16" font-weight="700" letter-spacing="3" text-anchor="middle" fill="url(#mg1)">ÂME</text>
-</svg></div><span class="log-name gt">ÂME</span></div><h2>Bon retour 👋</h2><p class="log-sub">Reconnecte-toi pour retrouver tes matches</p><div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="l-email" placeholder="ton@email.com"></div><div class="fg"><label class="fl">Mot de passe</label><input type="password" class="fi" id="l-mdp" placeholder="••••••••"></div><a class="forgot" onclick="resetPwd()">Mot de passe oublié ?</a><button class="btn-next" style="width:100%;margin-top:4px;" onclick="doLogin()">Se connecter</button><p class="ll" style="margin-top:12px;">Pas encore de compte ? <a onclick="goTo('s-register')">S'inscrire gratuitement</a></p></div></div>
+</svg></div><span class="log-name gt">ÂME</span></div><h2>Bon retour 👋</h2><p class="log-sub">Reconnecte-toi pour retrouver tes matches</p><div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="l-email" placeholder="ton@email.com"></div><div class="fg"><label class="fl">Mot de passe</label><input type="password" class="fi" id="l-mdp" placeholder="••••••••"></div><a class="forgot" onclick="openForgotScreen()">Mot de passe oublié ?</a><button class="btn-next" style="width:100%;margin-top:4px;" onclick="doLogin()">Se connecter</button><p class="ll" style="margin-top:12px;">Pas encore de compte ? <a onclick="goTo('s-register')">S'inscrire gratuitement</a></p></div></div>
+
+<!-- FORGOT PASSWORD SCREEN -->
+<div class="screen" id="s-forgot">
+  <div class="log-c" id="forgot-step1">
+    <div class="log-row">
+      <div class="log-mark" style="width:36px;height:36px;">🔒</div>
+      <span class="log-name gt">Mot de passe oublié</span>
+    </div>
+    <h2 style="font-size:19px;">Réinitialise ton mot de passe</h2>
+    <p class="log-sub">Entre l'adresse email liée à ton compte ÂME. Nous t'enverrons un lien pour créer un nouveau mot de passe.</p>
+    <div class="fg"><label class="fl">Adresse email</label><input type="email" class="fi" id="fg-email" placeholder="ton@email.com"></div>
+    <button class="btn-next" id="btn-fg-send" style="width:100%;margin-top:4px;" onclick="sendResetLink()">📧 Envoyer le lien de réinitialisation</button>
+    <p class="ll" style="margin-top:14px;"><a onclick="goTo('s-login')">← Retour à la connexion</a></p>
+  </div>
+
+  <div class="log-c" id="forgot-step2" style="display:none;text-align:center;">
+    <div style="font-size:56px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);">📬</div>
+    <h2 style="font-size:19px;">Vérifie ta boîte mail !</h2>
+    <p class="log-sub">Nous avons envoyé un lien de réinitialisation à<br><strong id="fg-sent-email" style="color:var(--rose2);">—</strong></p>
+    <div style="background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.2);border-radius:12px;padding:14px;margin-bottom:16px;text-align:left;">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Prochaines étapes</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;"><span>1️⃣</span><span>Ouvre ta boîte mail (vérifie aussi les spams)</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;font-size:13px;"><span>2️⃣</span><span>Clique sur le lien envoyé par ÂME</span></div>
+      <div style="display:flex;gap:8px;font-size:13px;"><span>3️⃣</span><span>Choisis ton nouveau mot de passe</span></div>
+    </div>
+    <button class="btn-next" style="width:100%;margin-bottom:10px;" onclick="goTo('s-login')">Retour à la connexion</button>
+    <a class="ll" style="cursor:pointer;" onclick="resendResetLink()">Je n'ai rien reçu — renvoyer le lien</a>
+  </div>
+</div>
 
 <!-- APP -->
 <div id="s-app">
@@ -839,8 +868,32 @@ body{font-family:'Inter',sans-serif;color:#fff;}
 <div class="ir"><span>Expire le</span><span id="p-exp">—</span></div>
 </div>
 <button class="bfull bprem" onclick="openPW()">⭐ Passer Premium — 2 000 F/mois</button>
+
+<!-- PANNEAU ADMIN — visible uniquement pour Willy -->
+<div class="pp-sec" id="adminPanel" style="display:none;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.05);">
+<h4 style="color:var(--orange);">⚡ Panneau Admin</h4>
+<p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Active Premium instantanément dès qu'un paiement MTN/Orange arrive sur ton téléphone.</p>
+<div class="fg" style="margin-bottom:8px;">
+<input type="email" class="fi" id="admin-search-email" placeholder="Email de l'utilisateur" style="font-size:13px;">
+</div>
+<button class="btn-next" style="width:100%;padding:11px;font-size:13px;" onclick="adminSearchUser()">🔍 Rechercher</button>
+<div id="admin-result"></div>
+</div>
+
+<div class="pp-sec">
+<h4>Sécurité & Support</h4>
+<div class="ir" style="cursor:pointer;" onclick="showLegal('privacy')"><span>🔒 Politique de confidentialité</span><span>›</span></div>
+<div class="ir" style="cursor:pointer;" onclick="showLegal('terms')"><span>📜 Conditions d'utilisation</span><span>›</span></div>
+<div class="ir" style="cursor:pointer;" onclick="window.open('https://wa.me/237659216429','_blank')"><span>💬 Contacter le support</span><span>›</span></div>
+</div>
 <button class="bfull bout" onclick="logout()">🚪 Se déconnecter</button>
 </div></div>
+</div>
+
+<!-- LEGAL SCREEN -->
+<div class="page" id="legalPage" style="position:fixed;inset:0;z-index:150;background:var(--dark);display:none;">
+<div class="tbar"><button class="back-btn" onclick="closeLegal()">‹</button><h2 id="legalTitle">Confidentialité</h2></div>
+<div style="flex:1;overflow-y:auto;padding:20px 18px 40px;font-size:13px;line-height:1.8;color:rgba(255,255,255,.8);" id="legalContent"></div>
 </div>
 
 </div><!-- /ap -->
@@ -859,7 +912,16 @@ body{font-family:'Inter',sans-serif;color:#fff;}
 <div class="mo" id="mo" onclick="if(event.target===this)closeMo()">
 <div class="mo-b">
 <div class="mo-h"></div>
-<div class="mo-hero" id="mhero"><button class="mo-cl" onclick="closeMo()">✕</button><span id="moem" style="font-size:76px;">👩🏾</span></div>
+<div class="mo-hero" id="mhero">
+<button class="mo-cl" onclick="closeMo()">✕</button>
+<button class="mo-cl" style="right:52px;" onclick="toggleReportMenu()">⋮</button>
+<span id="moem" style="font-size:76px;">👩🏾</span>
+</div>
+<!-- REPORT/BLOCK DROPDOWN -->
+<div id="reportMenu" style="display:none;position:absolute;top:52px;right:12px;background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:6px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:180px;">
+<button onclick="openReportFlow()" style="width:100%;text-align:left;background:none;border:none;color:#fff;padding:10px 12px;border-radius:9px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;">🚩 Signaler ce profil</button>
+<button onclick="confirmBlockUser()" style="width:100%;text-align:left;background:none;border:none;color:var(--red);padding:10px 12px;border-radius:9px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;">🚫 Bloquer cette personne</button>
+</div>
 <div class="mo-bd">
 <div class="mo-nm" id="monm">—</div>
 <div class="mo-sb" id="mosb">—</div>
@@ -880,6 +942,26 @@ body{font-family:'Inter',sans-serif;color:#fff;}
 <button class="mo-mg" id="momg">💬 Message</button>
 <button class="mo-lk" id="molk">❤️ Liker</button>
 </div>
+</div></div></div>
+
+<!-- REPORT MODAL -->
+<div class="mo" id="reportMo" onclick="if(event.target===this)closeReportFlow()">
+<div class="mo-b" style="max-width:440px;">
+<div class="mo-h"></div>
+<div class="mo-bd" style="padding-top:16px;">
+<h3 style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">🚩 Signaler ce profil</h3>
+<p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Aide-nous à garder ÂME sûr. Pourquoi signales-tu ce profil ?</p>
+<div id="reportReasons" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+<button class="report-reason" data-r="Faux profil / Usurpation" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">👤 Faux profil / Usurpation d'identité</button>
+<button class="report-reason" data-r="Photos inappropriées" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">🖼️ Photos inappropriées</button>
+<button class="report-reason" data-r="Messages offensants ou harcèlement" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">💬 Messages offensants / Harcèlement</button>
+<button class="report-reason" data-r="Arnaque / Demande d'argent" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">💰 Arnaque / Demande d'argent</button>
+<button class="report-reason" data-r="Mineur suspecté" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">🔞 Personne mineure suspectée</button>
+<button class="report-reason" data-r="Autre" onclick="selectReportReason(this)" style="text-align:left;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;cursor:pointer;">⋯ Autre raison</button>
+</div>
+<textarea id="reportDetails" class="fi" placeholder="Détails supplémentaires (optionnel)" rows="3" style="resize:none;margin-bottom:14px;"></textarea>
+<button class="btn-next" style="width:100%;background:var(--red);margin-bottom:8px;" onclick="submitReport()">Envoyer le signalement</button>
+<button class="btn-bk" style="width:100%;" onclick="closeReportFlow()">Annuler</button>
 </div></div></div>
 
 <!-- MATCH NOTIF -->
@@ -965,39 +1047,25 @@ body{font-family:'Inter',sans-serif;color:#fff;}
 <div class="pw-ft">Badge Vérifié ✅ + Boost de visibilité</div>
 </div>
 
-<!-- PAIEMENT AUTOMATIQUE NOTCHPAY -->
+<!-- PAIEMENT MONETBIL — WIDGET SÉCURISÉ -->
 <div style="margin-bottom:14px;">
-<p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Choisir le mode de paiement</p>
+<p style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Paiement Mobile Money</p>
 
-<!-- MTN MONEY AUTO -->
-<div class="pm" id="pm-mtn" onclick="selPM('mtn')">
-<div class="pm-hd"><span class="pm-ic">🟡</span><div class="pm-if"><div class="pm-nm">MTN Mobile Money</div><div class="pm-nu">Paiement automatique · Cameroun</div></div><div class="pm-ck" id="ck-mtn"></div></div>
-<div class="pm-inst" id="in-mtn">
-<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">
-✅ <strong>Paiement 100% automatique</strong><br>Tu reçois une demande de paiement directement sur ton téléphone MTN. Il te suffit de taper ton PIN.
+<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;margin-bottom:12px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">
+✅ <strong>Paiement sécurisé et automatique</strong><br>Tu seras redirigé vers la page de paiement Monetbil. Choisis MTN ou Orange, entre ton numéro et confirme avec ton code PIN. Ton compte Premium s'active automatiquement.
 </div>
-<div class="fg"><label class="fl" style="font-size:11px;">Ton numéro MTN Money</label>
-<input type="tel" class="fi" id="mtn-phone" placeholder="Ex: 6XXXXXXXX" style="font-size:14px;" maxlength="9"></div>
-<button class="bcnf" id="btn-mtn-pay" onclick="payNotchPay('mtn')">📱 Payer 2 000 F via MTN</button>
-<p class="pnt">Tu recevras une notification MTN MoMo sur ton téléphone.</p>
-</div></div>
 
-<!-- ORANGE MONEY AUTO -->
-<div class="pm" id="pm-or" onclick="selPM('or')">
-<div class="pm-hd"><span class="pm-ic">🟠</span><div class="pm-if"><div class="pm-nm">Orange Money</div><div class="pm-nu">Paiement automatique · Cameroun</div></div><div class="pm-ck" id="ck-or"></div></div>
-<div class="pm-inst" id="in-or">
-<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:12px;color:rgba(255,255,255,.8);line-height:1.6;">
-✅ <strong>Paiement 100% automatique</strong><br>Tu reçois un SMS Orange Money pour confirmer. Il te suffit de taper ton PIN.
+<button class="bcnf" id="btn-widget-pay" onclick="startWidgetPayment()" style="font-size:15px;padding:16px;">
+📱 Payer 2 000 F CFA maintenant
+</button>
+<div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+<span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;">🟡 MTN Money</span>
+<span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;">🟠 Orange Money</span>
 </div>
-<div class="fg"><label class="fl" style="font-size:11px;">Ton numéro Orange Money</label>
-<input type="tel" class="fi" id="orange-phone" placeholder="Ex: 6XXXXXXXX" style="font-size:14px;" maxlength="9"></div>
-<button class="bcnf" id="btn-or-pay" onclick="payNotchPay('orange')" style="background:linear-gradient(135deg,#FF6B00,#FF8C00);">📱 Payer 2 000 F via Orange</button>
-<p class="pnt">Tu recevras un SMS Orange Money pour confirmer.</p>
-</div></div>
 
 <!-- WHATSAPP FALLBACK -->
-<div class="pm" id="pm-wa" onclick="selPM('wa')">
-<div class="pm-hd"><span class="pm-ic">💬</span><div class="pm-if"><div class="pm-nm">WhatsApp</div><div class="pm-nu">Support & aide personnalisée</div></div><div class="pm-ck" id="ck-wa"></div></div>
+<div class="pm" id="pm-wa" onclick="selPM('wa')" style="margin-top:14px;">
+<div class="pm-hd"><span class="pm-ic">💬</span><div class="pm-if"><div class="pm-nm">Problème de paiement ?</div><div class="pm-nu">Contacte-nous directement</div></div><div class="pm-ck" id="ck-wa"></div></div>
 <div class="pm-inst" id="in-wa">
 <div class="pm-st"><div class="stn">1</div><div>Envoie un message WhatsApp au :<br><span class="pm-nr">+237 659 216 429</span></div></div>
 <div class="pm-st"><div class="stn">2</div><div>Écris : <strong>"Je veux m'abonner à ÂME Premium"</strong></div></div>
@@ -1009,8 +1077,8 @@ body{font-family:'Inter',sans-serif;color:#fff;}
 <!-- STATUT PAIEMENT EN ATTENTE -->
 <div id="pw-pending" style="display:none;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:14px;padding:16px;text-align:center;margin-bottom:12px;">
 <div style="font-size:32px;margin-bottom:8px;">⏳</div>
-<div style="font-weight:700;font-size:15px;color:#F59E0B;margin-bottom:6px;">Paiement en cours...</div>
-<p style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;">Vérifie ton téléphone et <strong>confirme le paiement</strong> avec ton PIN Mobile Money.<br>Ton compte sera activé <strong>automatiquement</strong> dans quelques secondes.</p>
+<div style="font-weight:700;font-size:15px;color:#F59E0B;margin-bottom:6px;">Vérification du paiement...</div>
+<p style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;">Un instant, on confirme ton paiement avec Monetbil.</p>
 <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;">
 <div style="width:8px;height:8px;background:var(--orange);border-radius:50%;animation:bl 1.4s infinite;"></div>
 <div style="width:8px;height:8px;background:var(--orange);border-radius:50%;animation:bl 1.4s .2s infinite;"></div>
@@ -1093,6 +1161,63 @@ let unsubCh=null;
 
 /* FIREBASE */
 function wFb(){return new Promise(r=>{if(window.__fbReady){r();return;}window.addEventListener('fb-ready',()=>r(),{once:true});});}
+
+/* ══ PAGES LÉGALES ══ */
+const LEGAL_TEXTS={
+  privacy:{
+    title:'Politique de confidentialité',
+    html:`<p style="margin-bottom:14px;"><strong>Dernière mise à jour :</strong> Juillet 2026</p>
+    <p style="margin-bottom:14px;">ÂME ("nous", "notre application") respecte ta vie privée. Cette politique explique quelles données nous collectons et comment nous les utilisons.</p>
+    <p style="margin-bottom:8px;"><strong>1. Données collectées</strong></p>
+    <p style="margin-bottom:14px;">Prénom, nom, âge, ville, email, caractéristiques physiques, objectif de rencontre, photos, messages échangés, et données de connexion (statut en ligne).</p>
+    <p style="margin-bottom:8px;"><strong>2. Utilisation des données</strong></p>
+    <p style="margin-bottom:14px;">Tes données servent uniquement à te proposer des profils compatibles, faire fonctionner le chat, et gérer ton abonnement. Nous ne vendons jamais tes données à des tiers.</p>
+    <p style="margin-bottom:8px;"><strong>3. Sécurité</strong></p>
+    <p style="margin-bottom:14px;">Tes données sont stockées de façon sécurisée via Firebase (Google). Les mots de passe sont chiffrés et jamais visibles, même par nous.</p>
+    <p style="margin-bottom:8px;"><strong>4. Tes droits</strong></p>
+    <p style="margin-bottom:14px;">Tu peux demander la suppression de ton compte et de toutes tes données à tout moment en nous contactant sur WhatsApp au +237 659 216 429.</p>
+    <p style="margin-bottom:8px;"><strong>5. Âge minimum</strong></p>
+    <p style="margin-bottom:14px;">ÂME est strictement réservé aux personnes de 18 ans et plus. Tout compte suspecté d'appartenir à un mineur sera immédiatement suspendu.</p>
+    <p style="margin-bottom:8px;"><strong>6. Contact</strong></p>
+    <p>Pour toute question : +237 659 216 429 (WhatsApp) — ETS WILL MÉDICAL, Yaoundé, Cameroun.</p>`
+  },
+  terms:{
+    title:"Conditions d'utilisation",
+    html:`<p style="margin-bottom:14px;"><strong>Dernière mise à jour :</strong> Juillet 2026</p>
+    <p style="margin-bottom:8px;"><strong>1. Acceptation</strong></p>
+    <p style="margin-bottom:14px;">En créant un compte sur ÂME, tu acceptes ces conditions dans leur intégralité.</p>
+    <p style="margin-bottom:8px;"><strong>2. Éligibilité</strong></p>
+    <p style="margin-bottom:14px;">Tu dois avoir au moins 18 ans pour utiliser ÂME. Toute fausse déclaration d'âge entraîne la suppression immédiate du compte.</p>
+    <p style="margin-bottom:8px;"><strong>3. Comportement attendu</strong></p>
+    <p style="margin-bottom:14px;">Il est interdit de : harceler d'autres utilisateurs, publier du contenu illégal ou offensant, créer un faux profil, usurper une identité, ou utiliser ÂME à des fins commerciales non autorisées. Tout manquement entraîne la suspension du compte.</p>
+    <p style="margin-bottom:8px;"><strong>4. Abonnement Premium</strong></p>
+    <p style="margin-bottom:14px;">L'essai gratuit dure 7 jours. Passé ce délai, l'abonnement Premium coûte 2 000 F CFA par mois, payable via MTN Mobile Money ou Orange Money. L'abonnement n'est pas reconduit automatiquement — tu dois repayer chaque mois.</p>
+    <p style="margin-bottom:8px;"><strong>5. Signalement et modération</strong></p>
+    <p style="margin-bottom:14px;">Nous nous réservons le droit de suspendre ou supprimer tout compte signalé et jugé contraire à ces conditions, sans préavis.</p>
+    <p style="margin-bottom:8px;"><strong>6. Responsabilité</strong></p>
+    <p style="margin-bottom:14px;">ÂME est une plateforme de mise en relation. Nous ne sommes pas responsables des interactions entre utilisateurs en dehors de l'application. Reste prudent(e) lors de rencontres en personne.</p>
+    <p style="margin-bottom:8px;"><strong>7. Modification</strong></p>
+    <p>Ces conditions peuvent être mises à jour. Les utilisateurs seront informés des changements majeurs.</p>`
+  }
+};
+function showLegal(type){
+  const data=LEGAL_TEXTS[type];
+  document.getElementById('legalTitle').textContent=data.title;
+  document.getElementById('legalContent').innerHTML=data.html;
+  document.getElementById('legalPage').style.display='flex';
+}
+function closeLegal(){document.getElementById('legalPage').style.display='none';}
+
+
+async function loadBlockedUsers(){
+  if(!S.user||!S.user.uid)return;
+  try{
+    await wFb();const fb=window.__fb;
+    const snap=await fb.getDocs(fb.collection(fb.db,'users',S.user.uid,'blocked'));
+    S.blockedUsers=[];
+    snap.forEach(d=>S.blockedUsers.push(d.id));
+  }catch(e){console.log('Load blocked error:',e);}
+}
 window.addEventListener('fb-ready',()=>{
   const fb=window.__fb;
   fb.onAuthStateChanged(fb.auth,async u=>{
@@ -1105,6 +1230,8 @@ window.addEventListener('fb-ready',()=>{
           S.trDays=dl;S.trExp=dl<=0&&!d.isPremium;S.isPrem=!!d.isPremium;
           const ac=document.querySelector('.screen.active');
           if(ac&&['s-age','s-register','s-login'].includes(ac.id))showApp();
+          loadBlockedUsers();
+          checkPendingPaymentOnLoad();
         }
       }catch(e){console.log(e);}
     }
@@ -1214,21 +1341,130 @@ async function doLogin(){
     toast('❌','Erreur',msg);
   }
 }
-async function resetPwd(){
-  const em=document.getElementById('l-email').value.trim();
-  if(!em){toast('⚠️','Email requis','Entre ton email d\'abord');return;}
-  try{await wFb();await window.__fb.sendPasswordResetEmail(window.__fb.auth,em);toast('📧','Email envoyé','Vérifie ta boîte mail');}
-  catch(e){toast('❌','Erreur','Email introuvable');}
+/* ══ MOT DE PASSE OUBLIÉ — PARCOURS COMPLET ══ */
+function openForgotScreen(){
+  // Pré-remplir avec l'email déjà tapé sur l'écran de connexion, si présent
+  const loginEmail=document.getElementById('l-email').value.trim();
+  document.getElementById('fg-email').value=loginEmail;
+  document.getElementById('forgot-step1').style.display='block';
+  document.getElementById('forgot-step2').style.display='none';
+  goTo('s-forgot');
+}
+
+async function sendResetLink(){
+  const em=document.getElementById('fg-email').value.trim();
+  if(!em){toast('⚠️','Email requis','Entre ton adresse email');return;}
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRegex.test(em)){toast('⚠️','Email invalide','Vérifie le format de ton email');return;}
+
+  const btn=document.getElementById('btn-fg-send');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Envoi en cours...';}
+
+  try{
+    await wFb();
+    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em);
+    // Toujours afficher le message de succès, même si l'email n'existe pas
+    // (bonne pratique de sécurité — évite de révéler quels emails sont inscrits)
+    document.getElementById('fg-sent-email').textContent=em;
+    document.getElementById('forgot-step1').style.display='none';
+    document.getElementById('forgot-step2').style.display='block';
+    S._lastResetEmail=em;
+  }catch(err){
+    console.log('Reset error:',err);
+    // Par sécurité, on affiche quand même le succès pour la plupart des erreurs
+    // (ne pas confirmer/infirmer l'existence d'un compte)
+    if(err.code==='auth/invalid-email'){
+      toast('⚠️','Email invalide','Vérifie le format de ton email');
+    }else{
+      document.getElementById('fg-sent-email').textContent=em;
+      document.getElementById('forgot-step1').style.display='none';
+      document.getElementById('forgot-step2').style.display='block';
+      S._lastResetEmail=em;
+    }
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='📧 Envoyer le lien de réinitialisation';}
+  }
+}
+
+async function resendResetLink(){
+  const em=S._lastResetEmail||document.getElementById('fg-email').value.trim();
+  if(!em)return;
+  try{
+    await wFb();
+    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em);
+    toast('📧','Lien renvoyé !','Vérifie à nouveau ta boîte mail');
+  }catch(e){
+    toast('📧','Lien renvoyé !','Vérifie à nouveau ta boîte mail');
+  }
 }
 
 /* APP INIT */
 function initApp(){
   updBan();updPP();
-  S.profs=getPrfs();
-  buildCards();renderGrid();
+  loadRealProfiles();
   renderCvs();renderMR();renderMG();renderLM();
   setTimeout(()=>toast('💌','Nouveau like !','Quelqu\'un t\'a liké secrètement 👀'),3000);
   setTimeout(()=>document.getElementById('instb').classList.add('show'),12000);
+}
+
+/* ══ CHARGER LES VRAIS PROFILS DEPUIS FIREBASE ══ */
+let _nextDemoId=1000;
+async function loadRealProfiles(){
+  S.profs=getPrfs(); // Affiche d'abord les profils démo pendant le chargement
+  if(S.vMode==='swipe')buildCards();else renderGrid();
+
+  if(!S.user||!S.user.uid){return;}
+
+  try{
+    await wFb();
+    const fb=window.__fb;
+    const go=S.user.genre==='H'?'F':'H';
+    const usersRef=fb.collection(fb.db,'users');
+    const q=fb.query(usersRef,fb.where('genre','==',go));
+    const snap=await fb.getDocs(q);
+
+    const realProfiles=[];
+    snap.forEach(docSnap=>{
+      if(docSnap.id===S.user.uid)return; // Exclure soi-même
+      const d=docSnap.data();
+      if(!d.age||d.age<18)return; // Sécurité 18+
+      if(S.blockedUsers&&S.blockedUsers.includes(docSnap.id))return;
+      realProfiles.push({
+        id:_nextDemoId++,
+        uid:docSnap.id,
+        p:d.prenom||'Utilisateur',
+        n:d.nom||'',
+        age:d.age,
+        g:d.genre,
+        v:d.ville||'',
+        t:d.taille||0,
+        w:d.poids||0,
+        tk:d.teint||'',
+        m:d.morpho||'',
+        o:d.objectif||'',
+        on:!!d.online,
+        c:d.compat||Math.floor(Math.random()*15)+75,
+        e:d.emoji||(d.genre==='H'?'👨🏾':'👩🏾'),
+        bio:d.bio||'',
+        tags:d.tags||[],
+        isReal:true
+      });
+    });
+
+    if(realProfiles.length>0){
+      // Mélange profils réels + démo, priorité aux réels
+      const myVille=S.user.ville||'';
+      const sameCity=realProfiles.filter(p=>p.v===myVille);
+      const combined=(sameCity.length>=3?sameCity:realProfiles).concat(getPrfs());
+      combined.sort((a,b)=>b.c-a.c);
+      S.profs=combined;
+      S.swIdx=0;
+      if(S.vMode==='swipe')buildCards();else renderGrid();
+    }
+  }catch(e){
+    console.log('Erreur chargement profils réels:',e);
+    // On garde les profils démo déjà affichés en cas d'erreur
+  }
 }
 
 /* BANNERS */
@@ -1329,9 +1565,39 @@ function swipe(dir,pid){
     else{card.style.transform='translateX(-150%) rotate(-20deg)';card.style.opacity='0';}
   }
   S.lastSw={p,idx:S.swIdx};S.swIdx++;
-  if((dir==='right'||dir==='super')&&Math.random()>0.5)setTimeout(()=>trigMatch(p.p,p.e),600);
+
+  if(dir==='right'||dir==='super'){
+    saveSwipeAndCheckMatch(p,dir);
+  }
   setTimeout(()=>buildCards(),450);
 }
+
+async function saveSwipeAndCheckMatch(p,dir){
+  // Profil démo (pas un vrai utilisateur) → simulation comme avant
+  if(!p.isReal||!S.user||!S.user.uid){
+    if(Math.random()>0.5)setTimeout(()=>trigMatch(p.p,p.e),600);
+    return;
+  }
+  try{
+    await wFb();
+    const fb=window.__fb;
+    // Sauvegarder mon like
+    await fb.setDoc(fb.doc(fb.db,'likes',S.user.uid+'_'+p.uid),{
+      from:S.user.uid,to:p.uid,type:dir,createdAt:fb.serverTimestamp()
+    });
+    // Vérifier si l'autre personne m'a déjà liké → vrai match mutuel
+    const theirLikeSnap=await fb.getDoc(fb.doc(fb.db,'likes',p.uid+'_'+S.user.uid));
+    if(theirLikeSnap.exists()){
+      // MATCH RÉEL ! Créer l'entrée de match pour les deux
+      await fb.setDoc(fb.doc(fb.db,'matches',[S.user.uid,p.uid].sort().join('_')),{
+        users:[S.user.uid,p.uid],
+        createdAt:fb.serverTimestamp()
+      });
+      setTimeout(()=>trigMatch(p.p,p.e),600);
+    }
+  }catch(e){console.log('Swipe save error:',e);}
+}
+
 function undo(){if(!S.lastSw)return;S.swIdx=S.lastSw.idx;buildCards();toast('↩️','Retour !','Action annulée');}
 
 /* GRID */
@@ -1407,6 +1673,7 @@ function resetF(){
 
 /* PROFILE MODAL */
 function openMo(p){
+  S._currentMoProfile=p;
   document.getElementById('moem').textContent=p.e;
   document.getElementById('monm').textContent=p.p+' '+p.n;
   document.getElementById('mosb').textContent=p.age+' ans · '+(p.g==='H'?'Homme':'Femme')+' · '+p.v;
@@ -1424,8 +1691,79 @@ function openMo(p){
   document.getElementById('momg').onclick=()=>{closeMo();openCh('u'+p.id,p.p+' '+p.n,p.e,null);showPg('c',document.getElementById('nb1'));};
   document.getElementById('mo').classList.add('open');
 }
-function closeMo(){document.getElementById('mo').classList.remove('open');}
+function closeMo(){document.getElementById('mo').classList.remove('open');document.getElementById('reportMenu').style.display='none';}
 function viewCP(){if(S.curCV){const p=PROFS.find(x=>'u'+x.id===S.curCV||x.id.toString()===S.curCV);if(p)openMo(p);}}
+
+/* ══ SIGNALEMENT / BLOCAGE ══ */
+let _reportTargetP=null,_reportReason=null;
+function toggleReportMenu(){
+  const m=document.getElementById('reportMenu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+function openReportFlow(){
+  document.getElementById('reportMenu').style.display='none';
+  _reportTargetP=S._currentMoProfile;
+  document.querySelectorAll('.report-reason').forEach(b=>b.style.borderColor='var(--border)');
+  document.getElementById('reportDetails').value='';
+  _reportReason=null;
+  document.getElementById('reportMo').classList.add('open');
+}
+function closeReportFlow(){document.getElementById('reportMo').classList.remove('open');}
+function selectReportReason(el){
+  document.querySelectorAll('.report-reason').forEach(b=>b.style.borderColor='var(--border)');
+  el.style.borderColor='var(--rose)';
+  _reportReason=el.dataset.r;
+}
+async function submitReport(){
+  if(!_reportReason){toast('⚠️','Choisis une raison','Sélectionne pourquoi tu signales ce profil');return;}
+  const details=document.getElementById('reportDetails').value.trim();
+  const p=_reportTargetP;
+  try{
+    if(S.user&&S.user.uid){
+      await wFb();const fb=window.__fb;
+      await fb.addDoc(fb.collection(fb.db,'reports'),{
+        reporterId:S.user.uid,
+        reporterEmail:S.user.email||'',
+        targetName:p?(p.p+' '+(p.n||'')):'Inconnu',
+        targetId:p?(p.uid||p.id):null,
+        reason:_reportReason,
+        details:details,
+        createdAt:fb.serverTimestamp(),
+        status:'pending'
+      });
+    }
+  }catch(e){console.log('Report save error:',e);}
+  closeReportFlow();closeMo();
+  toast('✅','Signalement envoyé','Merci, notre équipe va examiner ce profil sous 24h');
+}
+function confirmBlockUser(){
+  document.getElementById('reportMenu').style.display='none';
+  const p=S._currentMoProfile;
+  if(!p)return;
+  if(confirm('Bloquer '+p.p+' ? Cette personne ne pourra plus te voir ni te contacter.')){
+    blockUser(p);
+  }
+}
+async function blockUser(p){
+  const blockedId=p.uid||p.id.toString();
+  if(!S.blockedUsers)S.blockedUsers=[];
+  S.blockedUsers.push(blockedId);
+  try{
+    if(S.user&&S.user.uid){
+      await wFb();const fb=window.__fb;
+      await fb.setDoc(fb.doc(fb.db,'users',S.user.uid,'blocked',blockedId),{
+        name:p.p+' '+(p.n||''),
+        blockedAt:fb.serverTimestamp()
+      });
+    }
+  }catch(e){console.log('Block save error:',e);}
+  // Retirer des profils affichés immédiatement
+  S.profs=S.profs.filter(x=>(x.uid||x.id.toString())!==blockedId);
+  if(S.vMode==='swipe')buildCards();else renderGrid();
+  closeMo();
+  toast('🚫','Profil bloqué','Cette personne ne peut plus te contacter');
+}
+
 
 /* MATCH */
 function trigMatch(name,emoji){
@@ -1565,174 +1903,195 @@ function updPP(){
   document.getElementById('p-exp').textContent=u.trialEnd||'—';
   if(S.isPrem){document.getElementById('p-plan').textContent='Premium ⭐';document.getElementById('p-plan').style.color='#F59E0B';}
   else if(S.trExp){document.getElementById('p-plan').textContent='Essai expiré';document.getElementById('p-plan').style.color='var(--red)';}
+  const adminPanel=document.getElementById('adminPanel');
+  if(adminPanel)adminPanel.style.display=isAdmin()?'block':'none';
 }
 
-/* ══ MONETBIL PAIEMENT AUTOMATIQUE ══ */
+/* ══ MONETBIL — PAIEMENT PAR WIDGET (fiable, sans CORS) ══ */
 const MB_KEY='uueX6wuo4hPFOTjbog6TQ9WevgpurYhX';
-const MB_SECRET='tI2joVkecPlf1TnADVEySX8yTeItLCIgwTOQTEhfNlyncCx6jonG8nBMHNzDH5r6';
 
-async function payNotchPay(method){
+function appBaseUrl(){
+  return window.location.origin+window.location.pathname;
+}
+
+async function startWidgetPayment(){
   if(!S.user||!S.user.uid){toast('⚠️','Connexion requise','Connecte-toi d\'abord');return;}
-  const phoneEl=document.getElementById(method==='mtn'?'mtn-phone':'orange-phone');
-  const phone=(phoneEl?phoneEl.value.trim():'');
-  if(!phone||phone.length<8){toast('⚠️','Numéro requis','Entre ton numéro Mobile Money');return;}
+  const btn=document.getElementById('btn-widget-pay');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Redirection...';}
 
-  const btn=document.getElementById(method==='mtn'?'btn-mtn-pay':'btn-or-pay');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Traitement...';}
-  document.getElementById('pw-pending').style.display='block';
-  document.getElementById('pwc').style.opacity='0.6';
+  const txRef='AME'+Date.now()+S.user.uid.substring(0,6);
 
-  try{
-    let fp=phone.replace(/\s/g,'');
-    if(!fp.startsWith('237'))fp='237'+fp;
-    const operator=method==='mtn'?'MTN_MOMO_CMR':'ORANGE_MONEY_CMR';
-    const txRef='AME'+Date.now()+S.user.uid.substring(0,6);
-
-    // Initier paiement Monetbil
-    const params=new URLSearchParams({
-      service_key:MB_KEY,
-      amount:2000,
-      phone:fp,
-      operator:operator,
-      item_ref:txRef,
-      payment_ref:txRef,
-      user:S.user.email||'user@ame.cm',
-      first_name:S.user.prenom||'',
-      last_name:S.user.nom||'',
-      notify_url:'https://willydonald19-byte.github.io/ame-app/',
-      return_url:'https://willydonald19-byte.github.io/ame-app/'
-    });
-
-    const resp=await fetch('https://api.monetbil.com/payment/v1/process?'+params.toString(),{
-      method:'POST',
-      headers:{'Accept':'application/json'}
-    });
-    const data=await resp.json();
-    console.log('Monetbil:',data);
-
-    if(data.status===1||data.message==='success'||data.transaction_id){
-      const txId=data.transaction_id||txRef;
-      toast('📱','Confirme sur ton téléphone','Tape ton PIN Mobile Money');
-      setTimeout(()=>checkPaymentMB(txId,txRef),8000);
-    } else if(data.payment_url){
-      // Rediriger vers la page de paiement Monetbil
-      window.open(data.payment_url,'_blank');
-      toast('📱','Page de paiement ouverte','Complète le paiement et reviens ici');
-      setTimeout(()=>checkPaymentMB(txRef,txRef),30000);
-    } else {
-      throw new Error(data.message||'Erreur paiement');
-    }
-  }catch(err){
-    console.error('Monetbil error:',err);
-    document.getElementById('pw-pending').style.display='none';
-    document.getElementById('pwc').style.opacity='1';
-    if(btn){btn.disabled=false;btn.textContent=method==='mtn'?'📱 Payer 2 000 F via MTN':'📱 Payer 2 000 F via Orange';}
-    // Fallback: montrer instructions manuelles
-    showManualPayment();
-  }
-}
-
-function showManualPayment(){
-  document.getElementById('pw-pending').style.display='none';
-  document.getElementById('pwc').style.opacity='1';
-  document.getElementById('pwc').innerHTML=`
-    <div style="text-align:center;padding:10px 0 16px;">
-      <div style="font-size:36px;margin-bottom:10px;">💳</div>
-      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin-bottom:6px;">Paiement Manuel</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Effectue le virement et ton compte sera activé sous 1h</p>
-    </div>
-    <div style="background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.25);border-radius:14px;padding:16px;margin-bottom:12px;">
-      <div style="font-weight:700;font-size:14px;margin-bottom:10px;">🟡 MTN Mobile Money</div>
-      <div style="font-size:13px;margin-bottom:4px;">Envoie <strong>2 000 F CFA</strong> au :</div>
-      <div style="font-family:monospace;font-size:18px;font-weight:700;color:var(--rose2);letter-spacing:1px;margin-bottom:8px;">+237 659 216 429</div>
-      <div style="font-size:12px;color:var(--muted);">Référence : <strong>AME [ton email]</strong></div>
-    </div>
-    <div style="background:rgba(255,102,0,.08);border:1px solid rgba(255,102,0,.25);border-radius:14px;padding:16px;margin-bottom:16px;">
-      <div style="font-weight:700;font-size:14px;margin-bottom:10px;">🟠 Orange Money</div>
-      <div style="font-size:13px;margin-bottom:4px;">Envoie <strong>2 000 F CFA</strong> au :</div>
-      <div style="font-family:monospace;font-size:18px;font-weight:700;color:var(--rose2);letter-spacing:1px;margin-bottom:8px;">+237 653 145 534</div>
-      <div style="font-size:12px;color:var(--muted);">Référence : <strong>AME [ton email]</strong></div>
-    </div>
-    <button class="bcnf" onclick="confirmManualPay()">✅ J'ai effectué le paiement</button>
-    <a href="https://wa.me/237659216429?text=Bonjour+je+viens+de+payer+AME+Premium" target="_blank">
-      <button class="bcnf bwa" style="margin-top:8px;">💬 Confirmer via WhatsApp</button>
-    </a>
-    <button class="bcls" style="margin-top:8px;" onclick="closePW()">Plus tard</button>`;
-}
-
-function confirmManualPay(){
-  document.getElementById('pwc').style.display='none';
-  const pyd=document.getElementById('pyd');
-  pyd.classList.add('show');
-  pyd.innerHTML=`
-    <div class="pd-ic">✅</div>
-    <div class="pd-tt">Paiement reçu !</div>
-    <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px;">
-      Ton compte Premium sera activé sous <strong>1 heure</strong>.<br><br>
-      Envoie une capture de ton SMS de paiement sur WhatsApp pour accélerer l'activation :<br>
-      <strong style="color:var(--rose2);">+237 659 216 429</strong>
-    </p>
-    <button class="btn-next" style="width:100%;" onclick="closePW()">Compris 👍</button>`;
-  toast('✅','Merci !','Activation dans 1 heure maximum');
-}
-
-async function checkPaymentMB(txId,txRef,attempt=1){
-  if(attempt>10){showManualPayment();return;}
-  try{
-    const params=new URLSearchParams({service_key:MB_KEY,payment_ref:txRef});
-    const resp=await fetch('https://api.monetbil.com/payment/v1/status?'+params.toString());
-    const data=await resp.json();
-    console.log('MB check:',data);
-    const status=data.status||data.transaction?.status;
-    if(status===1||status==='success'||data.transaction?.status==='success'){
-      await activatePremium(txId);
-    } else if(status===0||status==='failed'){
-      document.getElementById('pw-pending').style.display='none';
-      document.getElementById('pwc').style.opacity='1';
-      toast('❌','Paiement échoué','Réessaie ou utilise le paiement manuel');
-    } else {
-      setTimeout(()=>checkPaymentMB(txId,txRef,attempt+1),8000);
-    }
-  }catch(e){setTimeout(()=>checkPaymentMB(txId,txRef,attempt+1),8000);}
-}
-
-async function activatePremium(txRef){
   try{
     await wFb();
     const fb=window.__fb;
+    // On enregistre le paiement en attente AVANT de rediriger,
+    // pour pouvoir le retrouver après le retour sur l'app (même onglet)
+    await fb.setDoc(fb.doc(fb.db,'pendingPayments',S.user.uid),{
+      ref:txRef,
+      amount:2000,
+      status:'pending',
+      createdAt:fb.serverTimestamp()
+    });
+  }catch(e){console.log('Pending save error:',e);}
+
+  const returnUrl=appBaseUrl();
+  const params=new URLSearchParams({
+    amount:2000,
+    currency:'XAF',
+    item_ref:txRef,
+    payment_ref:txRef,
+    user:S.user.email||'user@ame.cm',
+    first_name:S.user.prenom||'',
+    last_name:S.user.nom||'',
+    email:S.user.email||'',
+    notify_url:returnUrl,
+    return_url:returnUrl,
+    locale:'fr'
+  });
+
+  const widgetUrl='https://api.monetbil.com/widget/v2.1/'+MB_KEY+'?'+params.toString();
+  // Redirection dans le même onglet vers la page de paiement Monetbil sécurisée
+  window.location.href=widgetUrl;
+}
+
+/* ══ DÉTECTION DU RETOUR DE PAIEMENT (au chargement de l'app) ══ */
+async function checkPendingPaymentOnLoad(){
+  const qs=new URLSearchParams(window.location.search);
+  // Monetbil peut renvoyer différents noms de paramètres selon la version du widget
+  const statusRaw=(qs.get('status')||qs.get('payment_status')||qs.get('transaction_status')||'').toLowerCase();
+  const refFromUrl=qs.get('payment_ref')||qs.get('ref')||qs.get('transaction_id')||null;
+  const hasReturnParams=qs.has('status')||qs.has('payment_status')||qs.has('payment_ref');
+
+  if(!hasReturnParams)return; // Chargement normal de l'app, rien à faire
+
+  // Nettoie l'URL immédiatement pour éviter un ré-déclenchement au refresh
+  window.history.replaceState({},document.title,appBaseUrl());
+
+  if(!S.user||!S.user.uid){
+    // La session Firebase n'est pas encore restaurée, on retente dans 1s
+    setTimeout(checkPendingPaymentOnLoad,1000);
+    return;
+  }
+
+  const isSuccess=['success','successful','complete','completed','1','ok'].includes(statusRaw);
+  const isFailed=['failed','cancelled','canceled','0','error'].includes(statusRaw);
+
+  if(isSuccess){
+    await activatePremium(refFromUrl||'retour-widget');
+    openPW();
+    return;
+  }
+  if(isFailed){
+    toast('❌','Paiement échoué','Réessaie ou contacte le support WhatsApp');
+    return;
+  }
+
+  // Statut ambigu → on vérifie via notre enregistrement pendingPayments
+  try{
+    await wFb();
+    const fb=window.__fb;
+    const snap=await fb.getDoc(fb.doc(fb.db,'pendingPayments',S.user.uid));
+    if(snap.exists()&&snap.data().status==='pending'){
+      toast('⏳','Paiement en cours de vérification','On te confirme dès que possible');
+    }
+  }catch(e){console.log(e);}
+}
+
+/* ══ ACTIVATION PREMIUM (automatique après paiement OU via panneau admin) ══ */
+async function activatePremium(txRef,targetUid){
+  try{
+    await wFb();
+    const fb=window.__fb;
+    const uid=targetUid||S.user.uid;
     const next=new Date();next.setMonth(next.getMonth()+1);
-    await fb.updateDoc(fb.doc(fb.db,'users',S.user.uid),{
+    await fb.updateDoc(fb.doc(fb.db,'users',uid),{
       isPremium:true,
       premiumSince:fb.serverTimestamp(),
       premiumUntil:next.toLocaleDateString('fr-FR'),
       premiumUntilTimestamp:next.getTime(),
-      lastPaymentRef:txRef,
+      lastPaymentRef:txRef||'admin',
       lastPaymentDate:new Date().toLocaleDateString('fr-FR'),
-      paymentMethod:'Monetbil'
+      paymentMethod:targetUid?'Admin':'Monetbil'
     });
-    S.isPrem=true;S.trExp=false;S.user.isPremium=true;
-    document.getElementById('pw-pending').style.display='none';
-    document.getElementById('pwc').style.display='none';
-    const pyd=document.getElementById('pyd');
-    pyd.classList.add('show');
-    pyd.innerHTML=`
-      <div class="pd-ic">🎉</div>
-      <div class="pd-tt">Premium activé !</div>
-      <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px;">
-        Ton compte <strong>ÂME Premium</strong> est actif jusqu'au<br>
-        <strong style="color:var(--rose2);">${next.toLocaleDateString('fr-FR')}</strong>
-      </p>
-      <button class="btn-next" style="width:100%;" onclick="closePW();updBan();updPP();renderLM();">
-        🚀 Profiter de Premium !
-      </button>`;
-    updBan();updPP();renderLM();
-    toast('⭐','Premium activé !','Bienvenue dans ÂME Premium 🎉');
+    try{await fb.updateDoc(fb.doc(fb.db,'pendingPayments',uid),{status:'completed'});}catch(e){}
+
+    if(!targetUid||targetUid===S.user.uid){
+      S.isPrem=true;S.trExp=false;S.user.isPremium=true;
+      document.getElementById('pw-pending').style.display='none';
+      document.getElementById('pwc').style.display='none';
+      const pyd=document.getElementById('pyd');
+      pyd.classList.add('show');
+      pyd.innerHTML=`
+        <div class="pd-ic">🎉</div>
+        <div class="pd-tt">Premium activé !</div>
+        <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px;">
+          Ton compte <strong>ÂME Premium</strong> est actif jusqu'au<br>
+          <strong style="color:var(--rose2);">${next.toLocaleDateString('fr-FR')}</strong>
+        </p>
+        <button class="btn-next" style="width:100%;" onclick="closePW();updBan();updPP();renderLM();">
+          🚀 Profiter de Premium !
+        </button>`;
+      updBan();updPP();renderLM();
+      toast('⭐','Premium activé !','Bienvenue dans ÂME Premium 🎉');
+    }
   }catch(e){
     console.error('Activate:',e);
     toast('✅','Paiement reçu !','Activation dans quelques minutes...');
     document.getElementById('pw-pending').style.display='none';
   }
 }
+
+/* ══ PANNEAU ADMIN — Activation manuelle instantanée (pour Willy) ══ */
+const ADMIN_EMAIL='willydonald19@gmail.com';
+function isAdmin(){return S.user&&S.user.email&&S.user.email.toLowerCase()===ADMIN_EMAIL;}
+
+async function adminSearchUser(){
+  const email=document.getElementById('admin-search-email').value.trim().toLowerCase();
+  if(!email){toast('⚠️','Email requis','Entre l\'email de l\'utilisateur');return;}
+  const resultBox=document.getElementById('admin-result');
+  resultBox.innerHTML='<p style="font-size:12px;color:var(--muted);">🔍 Recherche...</p>';
+  try{
+    await wFb();
+    const fb=window.__fb;
+    const q=fb.query(fb.collection(fb.db,'users'),fb.where('email','==',email));
+    const snap=await fb.getDocs(q);
+    if(snap.empty){
+      resultBox.innerHTML='<p style="font-size:12px;color:var(--red);">❌ Aucun utilisateur trouvé avec cet email</p>';
+      return;
+    }
+    const docSnap=snap.docs[0];
+    const d=docSnap.data();
+    const uid=docSnap.id;
+    const isPrem=!!d.isPremium;
+    resultBox.innerHTML=`
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:10px;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:2px;">${d.prenom||''} ${d.nom||''}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${email} · ${d.ville||''}</div>
+        <div style="font-size:12px;margin-bottom:12px;">Statut actuel : <strong style="color:${isPrem?'var(--green)':'var(--muted)'};">${isPrem?'Premium ⭐':'Non premium'}</strong></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-next" style="flex:1;padding:10px;font-size:13px;" onclick="adminActivate('${uid}')">✅ Activer Premium (1 mois)</button>
+          <button class="btn-bk" style="flex:1;padding:10px;font-size:13px;" onclick="adminDeactivate('${uid}')">❌ Désactiver</button>
+        </div>
+      </div>`;
+  }catch(e){
+    console.error(e);
+    resultBox.innerHTML='<p style="font-size:12px;color:var(--red);">Erreur de recherche</p>';
+  }
+}
+async function adminActivate(uid){
+  await activatePremium('admin-manual',uid);
+  toast('✅','Compte activé !','Premium activé pour cet utilisateur');
+  adminSearchUser();
+}
+async function adminDeactivate(uid){
+  try{
+    await wFb();const fb=window.__fb;
+    await fb.updateDoc(fb.doc(fb.db,'users',uid),{isPremium:false});
+    toast('✅','Compte désactivé','Premium retiré pour cet utilisateur');
+    adminSearchUser();
+  }catch(e){toast('❌','Erreur','Impossible de désactiver');}
+}
+
 
 /* PAYWALL */
 function openPW(){
