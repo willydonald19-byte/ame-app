@@ -1230,7 +1230,9 @@ window.addEventListener('fb-ready',()=>{
           const now=Date.now(),te=d.trialEndTimestamp||now,dl=Math.max(0,Math.ceil((te-now)/86400000));
           S.trDays=dl;S.trExp=dl<=0&&!d.isPremium;S.isPrem=!!d.isPremium;
           const ac=document.querySelector('.screen.active');
-          if(ac&&['s-age','s-register','s-login'].includes(ac.id))showApp();
+          const appEl=document.getElementById('s-app');
+          const appAlreadyShown=appEl&&appEl.classList.contains('active');
+          if(!appAlreadyShown)showApp();
           loadBlockedUsers();
           checkPendingPaymentOnLoad();
         }
@@ -1327,6 +1329,8 @@ async function doReg(){
 async function doLogin(){
   const em=document.getElementById('l-email').value.trim(),pw=document.getElementById('l-mdp').value;
   if(!em||!pw){toast('⚠️','Champs requis','Entre ton email et mot de passe');return;}
+  const btn=document.querySelector('#s-login .btn-next');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Connexion...';}
   try{
     await wFb();const fb=window.__fb;
     const cr=await fb.signInWithEmailAndPassword(fb.auth,em,pw);
@@ -1337,9 +1341,14 @@ async function doLogin(){
     S.trDays=dl;S.trExp=dl<=0&&!d.isPremium;S.isPrem=!!d.isPremium;
     toast('👋','Bon retour !','Content de te revoir');showApp();
   }catch(err){
+    console.log('Login error:',err.code,err.message);
     let msg='Email ou mot de passe incorrect';
     if(err.code==='auth/user-not-found')msg='Aucun compte avec cet email';
+    else if(err.code==='auth/network-request-failed')msg='Problème de connexion internet';
+    else if(err.code==='auth/too-many-requests')msg='Trop de tentatives, réessaie dans 1 minute';
     toast('❌','Erreur',msg);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Se connecter';}
   }
 }
 /* ══ MOT DE PASSE OUBLIÉ — PARCOURS COMPLET ══ */
