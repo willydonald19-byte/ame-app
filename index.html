@@ -12,7 +12,7 @@
 <title>ÂME — Rencontres Authentiques</title>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail,verifyPasswordResetCode,confirmPasswordReset}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import{getFirestore,doc,setDoc,getDoc,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,updateDoc,where,getDocs,limit}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAGJafkJvW_JsKpK2rFUfdEvYK6hLE6heQ",
@@ -27,7 +27,7 @@
   const fbApp=initializeApp(firebaseConfig);
   const fbAuth=getAuth(fbApp);
   const fbDb=getFirestore(fbApp);
-  window.__fb={auth:fbAuth,db:fbDb,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail,doc,setDoc,getDoc,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,updateDoc,where,getDocs,limit};
+  window.__fb={auth:fbAuth,db:fbDb,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail,verifyPasswordResetCode,confirmPasswordReset,doc,setDoc,getDoc,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,updateDoc,where,getDocs,limit};
   window.__fbReady=true;
   window.dispatchEvent(new Event('fb-ready'));
 </script>
@@ -672,6 +672,27 @@ body{font-family:'Inter',sans-serif;color:#fff;-webkit-text-size-adjust:100%;tex
     </div>
     <button class="btn-next" style="width:100%;margin-bottom:10px;" onclick="goTo('s-login')">Retour à la connexion</button>
     <a class="ll" style="cursor:pointer;" onclick="resendResetLink()">Je n'ai rien reçu — renvoyer le lien</a>
+  </div>
+
+  <!-- STEP 3 : Choisir le nouveau mot de passe (ouvert directement depuis le lien reçu par email) -->
+  <div class="log-c" id="forgot-step3" style="display:none;">
+    <div class="log-row">
+      <div class="log-mark" style="width:36px;height:36px;">🔑</div>
+      <span class="log-name gt">Nouveau mot de passe</span>
+    </div>
+    <h2 style="font-size:19px;">Choisis ton nouveau mot de passe</h2>
+    <p class="log-sub">Pour le compte : <strong id="reset-account-email" style="color:var(--rose2);">—</strong></p>
+    <div class="fg"><label class="fl">Nouveau mot de passe</label><input type="password" class="fi" id="new-pwd" placeholder="Min. 8 caractères"></div>
+    <div class="fg"><label class="fl">Confirmer le mot de passe</label><input type="password" class="fi" id="new-pwd2" placeholder="Répète le mot de passe"></div>
+    <button class="btn-next" id="btn-confirm-newpwd" style="width:100%;margin-top:4px;" onclick="confirmNewPassword()">✅ Valider le nouveau mot de passe</button>
+  </div>
+
+  <!-- STEP 4 : Confirmation succès -->
+  <div class="log-c" id="forgot-step4" style="display:none;text-align:center;">
+    <div style="font-size:56px;margin-bottom:14px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);">🎉</div>
+    <h2 style="font-size:19px;">Mot de passe changé !</h2>
+    <p class="log-sub">Tu peux maintenant te connecter avec ton nouveau mot de passe.</p>
+    <button class="btn-next" style="width:100%;" onclick="goTo('s-login')">Se connecter →</button>
   </div>
 </div>
 
@@ -1358,6 +1379,8 @@ function openForgotScreen(){
   document.getElementById('fg-email').value=loginEmail;
   document.getElementById('forgot-step1').style.display='block';
   document.getElementById('forgot-step2').style.display='none';
+  document.getElementById('forgot-step3').style.display='none';
+  document.getElementById('forgot-step4').style.display='none';
   goTo('s-forgot');
 }
 
@@ -1370,22 +1393,23 @@ async function sendResetLink(){
   const btn=document.getElementById('btn-fg-send');
   if(btn){btn.disabled=true;btn.textContent='⏳ Envoi en cours...';}
 
+  // Le lien renvoie directement vers ÂME (pas la page générique Firebase)
+  // pour que l'utilisateur choisisse son nouveau mot de passe DANS l'app.
+  const actionCodeSettings={url:appBaseUrl(),handleCodeInApp:true};
+
   try{
     await wFb();
-    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em);
-    // Toujours afficher le message de succès, même si l'email n'existe pas
-    // (bonne pratique de sécurité — évite de révéler quels emails sont inscrits)
+    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em,actionCodeSettings);
     document.getElementById('fg-sent-email').textContent=em;
     document.getElementById('forgot-step1').style.display='none';
     document.getElementById('forgot-step2').style.display='block';
     S._lastResetEmail=em;
   }catch(err){
     console.log('Reset error:',err);
-    // Par sécurité, on affiche quand même le succès pour la plupart des erreurs
-    // (ne pas confirmer/infirmer l'existence d'un compte)
     if(err.code==='auth/invalid-email'){
       toast('⚠️','Email invalide','Vérifie le format de ton email');
     }else{
+      // Par sécurité, on affiche quand même le succès (n'expose pas si l'email existe)
       document.getElementById('fg-sent-email').textContent=em;
       document.getElementById('forgot-step1').style.display='none';
       document.getElementById('forgot-step2').style.display='block';
@@ -1399,12 +1423,72 @@ async function sendResetLink(){
 async function resendResetLink(){
   const em=S._lastResetEmail||document.getElementById('fg-email').value.trim();
   if(!em)return;
+  const actionCodeSettings={url:appBaseUrl(),handleCodeInApp:true};
   try{
     await wFb();
-    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em);
+    await window.__fb.sendPasswordResetEmail(window.__fb.auth,em,actionCodeSettings);
     toast('📧','Lien renvoyé !','Vérifie à nouveau ta boîte mail');
   }catch(e){
     toast('📧','Lien renvoyé !','Vérifie à nouveau ta boîte mail');
+  }
+}
+
+/* ══ DÉTECTION DU LIEN DE RÉINITIALISATION (ouvert depuis l'email) ══ */
+let _resetOobCode=null;
+async function checkResetLinkOnLoad(){
+  const qs=new URLSearchParams(window.location.search);
+  const mode=qs.get('mode');
+  const oobCode=qs.get('oobCode');
+  if(mode!=='resetPassword'||!oobCode)return;
+
+  S._resetLinkDetected=true; // Empêche le splash de rediriger vers la landing page
+  // Nettoie l'URL pour éviter un ré-déclenchement au refresh
+  window.history.replaceState({},document.title,appBaseUrl());
+
+  try{
+    await wFb();
+    const fb=window.__fb;
+    const email=await fb.verifyPasswordResetCode(fb.auth,oobCode);
+    _resetOobCode=oobCode;
+    document.getElementById('reset-account-email').textContent=email;
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s-forgot').classList.add('active');
+    document.getElementById('forgot-step1').style.display='none';
+    document.getElementById('forgot-step2').style.display='none';
+    document.getElementById('forgot-step3').style.display='block';
+    document.getElementById('forgot-step4').style.display='none';
+  }catch(err){
+    console.log('Lien invalide:',err);
+    toast('❌','Lien expiré','Ce lien a expiré ou a déjà été utilisé. Redemande-en un nouveau.');
+    goTo('s-login');
+  }
+}
+
+async function confirmNewPassword(){
+  const pw=document.getElementById('new-pwd').value;
+  const pw2=document.getElementById('new-pwd2').value;
+  if(!pw||pw.length<8){toast('⚠️','Mot de passe court','Minimum 8 caractères');return;}
+  if(pw!==pw2){toast('⚠️','Mots de passe','Les mots de passe ne correspondent pas');return;}
+  if(!_resetOobCode){toast('❌','Erreur','Lien de réinitialisation invalide');return;}
+
+  const btn=document.getElementById('btn-confirm-newpwd');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Enregistrement...';}
+
+  try{
+    await wFb();
+    const fb=window.__fb;
+    await fb.confirmPasswordReset(fb.auth,_resetOobCode,pw);
+    _resetOobCode=null;
+    document.getElementById('forgot-step3').style.display='none';
+    document.getElementById('forgot-step4').style.display='block';
+    toast('✅','Mot de passe changé !','Connecte-toi avec ton nouveau mot de passe');
+  }catch(err){
+    console.log('Confirm reset error:',err);
+    let msg='Ce lien a expiré, redemande une réinitialisation';
+    if(err.code==='auth/weak-password')msg='Mot de passe trop faible';
+    toast('❌','Erreur',msg);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✅ Valider le nouveau mot de passe';}
   }
 }
 
@@ -2140,7 +2224,13 @@ function toast(ico,title,msg){
 }
 
 /* SPLASH */
-setTimeout(()=>goTo('s-landing'),2200);
+checkResetLinkOnLoad();
+setTimeout(()=>{
+  if(S._resetLinkDetected)return; // Un lien de réinitialisation est en cours de traitement
+  const ac=document.querySelector('.screen.active');
+  if(ac&&ac.id==='s-forgot')return;
+  goTo('s-landing');
+},2200);
 
 /* INIT LABELS */
 updA();updH();updP();
